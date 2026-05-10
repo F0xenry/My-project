@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c808de337ff81a9418ffdd3a13dd9c8e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - seatsPanel: {instanceID: 0}
+  - paymentPanel: {instanceID: 0}
+  - seatPrefab: {instanceID: 0}
+  - seatParent: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
