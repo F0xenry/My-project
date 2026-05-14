@@ -120,6 +120,7 @@ public class TicketBookingManager : MonoBehaviour
                             string arrTime = reader.GetDateTime("arrival_time").ToString("HH:mm");
                             decimal price = reader.GetDecimal("price");
                             int seats = reader.GetInt32("available_seats");
+                           
 
                             GameObject card = Instantiate(tripCardPrefab, tripsContent);
                             TicketCardUI cardUI = card.GetComponent<TicketCardUI>();
@@ -226,15 +227,92 @@ public class TicketBookingManager : MonoBehaviour
                     cmd.ExecuteNonQuery();
                 }
 
-                // Генерируем PDF
-                string pdfPath = PDFGenerator.CreateTicketPDF(newTicketId, passengerName, tripId, quantity, totalPrice, selectedDate);
+                // ПОЛУЧАЕМ ДАННЫЕ О РЕЙСЕ ДЛЯ PDF (Добавлено, чтобы избежать CS0103)
+                DateTime tripDate = DateTime.Now;
+                string departureTime = "";
+                string departurePlace = "";
+
+                string selectTripQuery = "SELECT departure_time FROM trips WHERE id = @tripId LIMIT 1"; // Убедитесь, что слова 'date' здесь НЕТ
+                using (MySqlCommand cmd = new MySqlCommand(selectTripQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@tripId", tripId);
+                    using (MySqlDataReader tripReader = cmd.ExecuteReader())
+                    {
+                        if (tripReader.Read())
+                        {
+                            DateTime fullDateTime = tripReader.GetDateTime("departure_time");
+                            tripDate = fullDateTime.Date;
+                            departureTime = fullDateTime.ToString("HH:mm");
+                        }
+                    }
+                }
+
+                // ПОЛУЧАЕМ ДАННЫЕ О МАРШРУТЕ И РЕЙСЕ ДЛЯ PDF
+                tripDate = DateTime.Now;
+                string departureTimeStr = "";
+                string departurePlaceStr = "";
+                int exactAvailableSeats = 0;
+
+                // Объединяем trips и routes по route_id (или как у вас называется поле связи)
+                selectTripQuery = @"
+                    SELECT t.departure_time, t.available_seats, r.departure_city, r.arrival_city, r.departure_station 
+                    FROM trips t
+                    INNER JOIN routes r ON t.route_id = r.id 
+                    WHERE t.id = @tripId LIMIT 1";
+
+                using (MySqlCommand cmd = new MySqlCommand(selectTripQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@tripId", tripId);
+                    using (MySqlDataReader tripReader = cmd.ExecuteReader())
+                    {
+                        if (tripReader.Read())
+                        {
+                            DateTime fullDateTime = tripReader.GetDateTime("departure_time");
+                            tripDate = fullDateTime.Date;
+                            departureTimeStr = fullDateTime.ToString("HH:mm");
+
+                            string depCity = tripReader.GetString("departure_city");
+                            string arrCity = tripReader.GetString("arrival_city");
+                            string station = tripReader.GetString("departure_station");
+
+                            departurePlaceStr = $"{depCity} — {arrCity} ({station})";
+
+                            // Считываем точное число из базы данных прямо сейчас!
+                            exactAvailableSeats = tripReader.GetInt32("available_seats");
+                        }
+                    }
+                }
+
+                // Генерируем PDF 
+                string pdfPath = PDFGenerator.CreateTicketPDF(
+                    newTicketId,
+                    passengerName,
+                    tripId,
+                    quantity,
+                    totalPrice,
+                    tripDate,
+                    departureTimeStr,
+                    departurePlaceStr // Передаем автоматически собранный маршрут с остановкой
+                );
+                // АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ БИЛЕТА (Добавьте этот блок)
+                if (!string.IsNullOrEmpty(pdfPath) && System.IO.File.Exists(pdfPath))
+                {
+                    Debug.Log($"[TicketSystem] Открываем сгенерированный билет: {pdfPath}");
+                    Application.OpenURL(pdfPath); // Запуск системного просмотрщика PDF
+                    
+                }
+                else
+                {
+                    Debug.LogError("[TicketSystem] Не удалось открыть билет: файл не найден или путь пустой.");
+                }
+                UpdateSpecificCard(tripId, exactAvailableSeats);
 
                 // Показ успеха
                 if (successPanel != null)
                 {
                     successPanel.SetActive(true);
                     if (successText != null)
-                        successText.text = $"Билет #{newTicketId} успешно куплен!\nPDF сохранён";
+                        successText.text = $"Билет #{newTicketId} успешно куплен!\nPDF сохранён в Документы/ИП Семинаев Билеты ";
                 }
 
                 Debug.Log($"Билет #{newTicketId} создан для {passengerName}");
@@ -248,17 +326,40 @@ public class TicketBookingManager : MonoBehaviour
 
 
     // Обновляем ТОЛЬКО карточку с нужным tripId
-    private void UpdateSpecificCard(int tripIdToUpdate, int newAvailableSeats)
+    public void UpdateSpecificCard(int tripIdToUpdate, int finalSeatsCount)
     {
-        foreach (Transform child in tripsContent)
+        // Ищем все карточки на сцене
+        TicketCardUI[] allCards = FindObjectsOfType<TicketCardUI>();
+
+        foreach (TicketCardUI card in allCards)
         {
-            TicketCardUI cardUI = child.GetComponent<TicketCardUI>();
-            if (cardUI != null)
+            // Проверяем, совпадает ли ID рейса у карточки с обновляемым
+            // (В вашем TicketCardUI ID рейса хранится в переменной tripId или внутри объекта данных)
+            if (card != null && card.tripId == tripIdToUpdate)
             {
-                cardUI.UpdateSeats(tripIdToUpdate, newAvailableSeats);
+                // Находим текстовое поле мест в вашей карточке и обновляем его напрямую.
+                // В вашем скрипте оно может называться availableSeatsText, seatsText или аналогично.
+                // Ниже приведен пример прямого обращения к TMP-компоненту вашей карточки:
+                if (card.seatsText != null)
+                {
+                    card.seatsText.text = $"Свободно мест: {finalSeatsCount}";
+
+
+                }
+                if (card.availableSeatsText != null)
+                {
+                    card.availableSeatsText.text = $"/ {finalSeatsCount}";
+
+                }
+
+                // Если у вас в карточке есть локальная копия данных, обновляем и её
+                // card.currentAvailableSeats = finalSeatsCount;
+
+                break; // Карточка найдена и обновлена, выходим из цикла
             }
         }
     }
+
 
     public void HideSuccessPanel()
     {

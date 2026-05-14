@@ -19,7 +19,7 @@ public class TicketCardUI : MonoBehaviour
     [Header("Кнопка")]
     public Button buyButton;
 
-    private int tripId;
+    public int tripId;
     private int maxSeats;
     private TicketBookingManager manager;
 
