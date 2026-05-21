@@ -32,7 +32,7 @@ public class TripRowUI : MonoBehaviour
         if (dateTimeText != null) dateTimeText.text = data.departureTime.ToString("dd.MM.yyyy\nHH:mm");
         if (seatsText != null) seatsText.text = $"{data.bookedSeats} / {data.totalSeats}\n<color=green>({data.availableSeats} св.)</color>";
         if (busText != null) busText.text = data.busNumber;
-        if (priceText != null) priceText.text = $"{data.price} ₽";
+        if (priceText != null) priceText.text = $"{data.price} Р";
 
         // Подписываем кнопки на события клика программно, чтобы не настраивать вручную в инспекторе
         if (deleteButton != null)

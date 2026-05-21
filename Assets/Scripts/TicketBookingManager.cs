@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class TicketBookingManager : MonoBehaviour
 {
@@ -312,7 +313,7 @@ public class TicketBookingManager : MonoBehaviour
                 {
                     successPanel.SetActive(true);
                     if (successText != null)
-                        successText.text = $"Билет #{newTicketId} успешно куплен!\nPDF сохранён в Документы/ИП Семинаев Билеты ";
+                        successText.text = $"Билет #{newTicketId} успешно куплен!\nPDF сохранён в Документы/Билеты ";
                 }
 
                 Debug.Log($"Билет #{newTicketId} создан для {passengerName}");
@@ -365,5 +366,10 @@ public class TicketBookingManager : MonoBehaviour
     {
         if (successPanel != null)
             successPanel.SetActive(false);
+    }
+
+    public void ExitToLogin()
+    {
+        SceneManager.LoadScene("LoginScene");
     }
 }

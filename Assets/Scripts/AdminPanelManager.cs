@@ -21,85 +21,23 @@ public class AdminPanelManager : MonoBehaviour
     [Header("UI Уведомления")]
     public Text statusText;
 
+    [Header("Все панели админки")]
+    public GameObject[] allPanels; // Сюда в инспекторе скидываем панели: 0 - Рейсы, 1 - Клиенты, 2 - Деньги
+
+
     /// <summary>
-    /// 1. ДОБАВЛЕНИЕ НОВОГО МАРШРУТА (Создает направление между городами)
+    /// Метод переключения панелей по ID
     /// </summary>
-    public void AddNewRoute()
+    public void SwitchPanel(int panelIndex)
     {
-        if (string.IsNullOrEmpty(departureCityField.text) || string.IsNullOrEmpty(arrivalCityField.text))
+        // Циклом проходим по всем панелям: нужную включаем, остальные выключаем
+        for (int i = 0; i < allPanels.Length; i++)
         {
-            ShowStatus("<color=red>Заполните города отправления и прибытия!</color>");
-            return;
-        }
-
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
-        {
-            try
-            {
-                conn.Open();
-                string query = @"INSERT INTO routes (departure_city, arrival_city, departure_station) 
-                                 VALUES (@depCity, @arrCity, @station)";
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@depCity", departureCityField.text.Trim());
-                    cmd.Parameters.AddWithValue("@arrCity", arrivalCityField.text.Trim());
-                    cmd.Parameters.AddWithValue("@station", string.IsNullOrEmpty(departureStationField.text) ? "Автовокзал" : departureStationField.text.Trim());
-
-                    cmd.ExecuteNonQuery();
-                    ShowStatus("<color=green>Маршрут успешно добавлен в БД!</color>");
-                    ClearRouteFields();
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowStatus("<color=red>Ошибка БД: " + ex.Message + "</color>");
-            }
+            if (allPanels[i] != null)
+                allPanels[i].SetActive(i == panelIndex);
         }
     }
 
-    /// <summary>
-    /// 2. ДОБАВЛЕНИЕ КОНКРЕТНОГО РЕЙСА (Привязывает время и места к маршруту)
-    /// </summary>
-    public void AddNewTrip()
-    {
-        if (string.IsNullOrEmpty(routeIdField.text) || string.IsNullOrEmpty(departureTimeField.text))
-        {
-            ShowStatus("<color=red>Заполните ID маршрута и время!</color>");
-            return;
-        }
-
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
-        {
-            try
-            {
-                conn.Open();
-                string query = @"INSERT INTO trips (route_id, departure_time, total_seats, available_seats, price) 
-                                 VALUES (@routeId, @depTime, @totalSeats, @availSeats, @price)";
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@routeId", int.Parse(routeIdField.text));
-                    cmd.Parameters.AddWithValue("@depTime", DateTime.Parse(departureTimeField.text)); // Парсим строку в DATETIME
-                    cmd.Parameters.AddWithValue("@totalSeats", int.Parse(totalSeatsField.text));
-                    cmd.Parameters.AddWithValue("@availSeats", int.Parse(totalSeatsField.text)); // Изначально свободны все места
-                    cmd.Parameters.AddWithValue("@price", decimal.Parse(priceField.text));
-
-                    cmd.ExecuteNonQuery();
-                    ShowStatus("<color=green>Рейс успешно опубликован!</color>");
-                    ClearTripFields();
-                }
-            }
-            catch (FormatException)
-            {
-                ShowStatus("<color=red>Неверный формат чисел или даты (ГГГГ-ММ-ДД ЧЧ:ММ:СС)!</color>");
-            }
-            catch (Exception ex)
-            {
-                ShowStatus("<color=red>Ошибка БД: " + ex.Message + "</color>");
-            }
-        }
-    }
 
     /// <summary>
     /// 3. УДАЛЕНИЕ РЕЙСА
