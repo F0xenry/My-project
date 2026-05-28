@@ -20,8 +20,10 @@ public class TicketBookingManager : MonoBehaviour
 
     public Transform tripsContent;
     public GameObject tripCardPrefab;
+    public GameObject errorPanel;
+    public TMP_Text errorText;
 
-    [Header("Окно успеха")]
+   [Header("Окно успеха")]
     public GameObject successPanel;
     public TMP_Text successText;
 
@@ -46,11 +48,42 @@ public class TicketBookingManager : MonoBehaviour
     public void SetSelectedDate(DateTime date)
     {
         selectedDate = date;
-        Debug.Log("Выбрана дата: " + date.ToString("dd.MM.yyyy"));
+        if (searchButton != null)
+        {
+            searchButton.interactable = (date.Date >= DateTime.Today);
+        }
 
-        // Можно автоматически обновить поиск после выбора даты
-        SearchTrips();
+        if (date.Date < DateTime.Today)
+        {
+            ShowErrorMessage("Выберите сегодняшнюю или будущую дату");
+        }
+        Debug.Log("Выбрана дата: " + date.ToString("dd.MM.yyyy"));
+        if (date.Date >= DateTime.Today)
+        {
+            SearchTrips();
+        }
+            // Можно автоматически обновить поиск после выбора даты
+            
     }
+
+    private void ShowErrorMessage(string message)
+    {
+        Debug.LogError(message);
+
+        // Если у тебя есть панель для ошибок — раскомментируй и настрой
+        
+        if (errorPanel != null)
+        {
+            errorText.text = message;
+            errorPanel.SetActive(true);
+
+            // Автоматически скрыть через 3 секунды
+            Invoke(nameof(HideErrorPanel), 3f);
+        }
+        
+    }
+
+    private void HideErrorPanel() { errorPanel.SetActive(false); }
 
     private void Start()
     {
@@ -285,7 +318,7 @@ public class TicketBookingManager : MonoBehaviour
                 }
 
                 // Генерируем PDF 
-                string pdfPath = PDFGenerator.CreateTicketPDF(
+                string pdfPath = PDFGenerator.GeneratePDF(
                     newTicketId,
                     passengerName,
                     tripId,

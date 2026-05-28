@@ -90,7 +90,8 @@ public class TicketManager : MonoBehaviour
         // 3. Передаем собранные данные в ваш готовый и исправленный класс PDFGenerator
         if (tripId != 0)
         {
-            string createdPath = PDFGenerator.CreateTicketPDF(
+
+            string createdPath = PDFGenerator.GeneratePDF(
                 ticketId,
                 passengerName,
                 tripId,

@@ -5,9 +5,41 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.qrcode;
 
-public static class PDFGenerator
+public class PDFGenerator : MonoBehaviour
 {
-    public static string CreateTicketPDF(int ticketId, string passengerName, int tripId,
+    public static PDFGenerator Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    public static string GeneratePDF(int ticketId, string passengerName, int tripId,
+                                int quantity, decimal totalPrice, DateTime tripDate,
+                                string departureTime, string departurePlace)
+    {
+        if (Instance != null)
+        {
+            return Instance.CreateTicketPDF(ticketId, passengerName, tripId, quantity,
+                                           totalPrice, tripDate, departureTime, departurePlace);
+        }
+        else
+        {
+            Debug.LogError("PDFGenerator.Instance == null");
+            return "";
+        }
+    }
+
+
+
+    public string CreateTicketPDF(int ticketId, string passengerName, int tripId,
                                        int quantity, decimal totalPrice, DateTime tripDate,
                                        string departureTime, string departurePlace)
     {

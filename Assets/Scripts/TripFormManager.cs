@@ -61,8 +61,11 @@ public class TripFormManager : MonoBehaviour
         int selectedBusId = busIds[busDropdown.value];
 
         DateTime depTime = DateTime.Parse(dateTimeInput.text.Trim());
+        DateTime arrTime = depTime.AddHours(5);
         int seats = int.Parse(totalSeatsInput.text.Trim());
         decimal price = decimal.Parse(priceInput.text.Trim());
+
+        
 
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
@@ -71,14 +74,15 @@ public class TripFormManager : MonoBehaviour
                 conn.Open();
 
                 // Запрос на создание нового рейса
-                string query = @"INSERT INTO trips (route_id, bus_id, departure_time, total_seats, available_seats, price) 
-                                 VALUES (@route, @bus, @time, @seats, @seats, @price)";
+                string query = @"INSERT INTO trips (route_id, bus_id, departure_time, arrival_time, total_seats, available_seats, price) 
+                                 VALUES (@route, @bus, @deptime, @arrtime, @seats, @seats, @price)";
 
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@route", selectedRouteId);
                     cmd.Parameters.AddWithValue("@bus", selectedBusId);
-                    cmd.Parameters.AddWithValue("@time", depTime);
+                    cmd.Parameters.AddWithValue("@deptime", depTime);
+                    cmd.Parameters.AddWithValue("@arrtime", arrTime);
                     cmd.Parameters.AddWithValue("@seats", seats);
                     cmd.Parameters.AddWithValue("@price", price);
 
