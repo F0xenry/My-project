@@ -53,7 +53,7 @@ public class UserProfileManager : MonoBehaviour
 
     private void Start()
     {
-        /*
+        
         CurrentUserID = PlayerPrefs.GetInt("CurrentUserID", 0);
 
         if (CurrentUserID == 0)
@@ -67,7 +67,7 @@ public class UserProfileManager : MonoBehaviour
 
         activeTabButton.onClick.AddListener(ShowActiveTickets);
         historyTabButton.onClick.AddListener(ShowHistoryTickets);
-        */
+        
     }
 
     private void OnEnable()
@@ -208,9 +208,9 @@ public class UserProfileManager : MonoBehaviour
                             totalFound++;
                             DateTime ticketDate = Convert.ToDateTime(reader["purchase_date"]);
                             string depTime = reader["departure_time"].ToString();
-                            //bool ticketIsActive = ticketDate.Date >= DateTime.Today;
+                            bool ticketIsActive = ticketDate.Date >= DateTime.Today;
 
-                            bool ticketIsActive = IsTicketStillActive(ticketDate, depTime);
+                            //bool ticketIsActive = IsTicketStillActive(ticketDate, depTime);
                             // Показываем только нужные по вкладке
                             if (ticketIsActive == isActive)
                              {

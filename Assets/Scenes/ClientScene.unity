@@ -467,6 +467,7 @@ GameObject:
   - component: {fileID: 97728565}
   - component: {fileID: 97728564}
   - component: {fileID: 97728566}
+  - component: {fileID: 97728567}
   m_Layer: 0
   m_Name: TicketBookingManager
   m_TagString: Untagged
@@ -505,12 +506,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 97728563}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 594.0574, y: 197.92404, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 12.88855, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 291758928}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &97728566
 MonoBehaviour:
@@ -524,6 +525,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 071f3685e7bba79499db96529ffd8a76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TicketManager
+--- !u!114 &97728567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97728563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c2bbdcef90e17f44a16661f38bbdc83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PDFGenerator
 --- !u!1 &113359226
 GameObject:
   m_ObjectHideFlags: 0
@@ -2377,6 +2390,7 @@ RectTransform:
   - {fileID: 1342365048}
   - {fileID: 303567587}
   - {fileID: 1708300673}
+  - {fileID: 97728565}
   m_Father: {fileID: 1243356512}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2759,13 +2773,13 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 460857513}
   - {fileID: 1898787717}
   - {fileID: 130636934}
   - {fileID: 853687665}
   - {fileID: 1724855492}
   - {fileID: 221120382}
   - {fileID: 1450507611}
+  - {fileID: 460857513}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3077,7 +3091,6 @@ GameObject:
   m_Component:
   - component: {fileID: 460857513}
   - component: {fileID: 460857512}
-  - component: {fileID: 460857514}
   m_Layer: 0
   m_Name: UserProfileScrp
   m_TagString: Untagged
@@ -3119,18 +3132,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 366161118}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &460857514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 460857511}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c2bbdcef90e17f44a16661f38bbdc83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PDFGenerator
 --- !u!1 &463515399
 GameObject:
   m_ObjectHideFlags: 0
@@ -13930,5 +13931,4 @@ SceneRoots:
   - {fileID: 614186184}
   - {fileID: 1243356512}
   - {fileID: 1326529619}
-  - {fileID: 97728565}
   - {fileID: 366161118}

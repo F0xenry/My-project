@@ -2,7 +2,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using TMPro;
+using System.Collections;
+using System.IO;
+using UnityEngine.SceneManagement;
 // Класс-контейнер для удобного хранения данных рейса в Unity
 public class TripData
 {
@@ -24,6 +28,8 @@ public class AdminDashboard : MonoBehaviour
     [Header("Настройки Таблицы")]
     public Transform container;       // Объект-контейнер (с компонентом Vertical Layout Group)
     public GameObject rowPrefab;      // Префикс строки таблицы (UI элемент)
+    public GameObject DelPanel;
+    public TMP_Text Deltext;
 
     private List<GameObject> spawnedRows = new List<GameObject>();
 
@@ -125,6 +131,12 @@ public class AdminDashboard : MonoBehaviour
         // Перед удалением можно вывести системный лог или сделать быструю проверку
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
+            if (DelPanel != null)
+            {
+                DelPanel.SetActive(true);
+                if (Deltext != null)
+                    Deltext.text = $"Рейс #{tripId} успешно удален";
+            }
             try
             {
                 conn.Open();
